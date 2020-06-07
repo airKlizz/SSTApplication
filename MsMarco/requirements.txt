@@ -1,0 +1,7 @@
+tensorflow
+numpy
+json5
+pandas
+sklearn
+tqdm
+transformers
