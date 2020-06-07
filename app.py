@@ -1,26 +1,65 @@
+
 import streamlit as st
 
 import tensorflow as tf
 import numpy as np
 from transformers import TFAutoModel, AutoTokenizer
-from MsMarco.bonus.search_engine import *
-from MsMarco.model.scorer import Scorer
+from MsMarco.use import Ranker
 
-_MAX_LENGTH = 256
-_NUM_CLASSES = 2
+from tinydb import TinyDB, Query
+
 _MODEL_NAME = 'roberta-large'
 _WEIGTH_PATH = 'MsMarco/model/saved_weights/model_roberta-large_mrr_0.303.h5'
 
-tokenizer = AutoTokenizer.from_pretrained(_MODEL_NAME)
-model = Scorer(tokenizer, TFAutoModel, _MAX_LENGTH, _NUM_CLASSES)
-model.from_pretrained(_MODEL_NAME)
-model(tf.zeros([1, 3, _MAX_LENGTH], tf.int32))
-model.load_weights(_WEIGTH_PATH)
-model.compile(run_eagerly=True)
+_TOP_N = 10
+_BASKET_FILENAME = 'basket.db'
+
+@st.cache(hash_funcs={Ranker: hash})
+def load_ranker():
+  ranker = Ranker('', _MODEL_NAME, _WEIGTH_PATH)
+  return ranker
+
+@st.cache(hash_funcs={Ranker: hash})
+def get_passages(ranker, title):
+  ranker.topic = title
+  ranker.find_passages(3)
+  top, scores = ranker.get_rerank_top(top_n=_TOP_N, top_n_bm25=20)
+  return [{'text': passage.text, 'source': passage.source} for passage in top]
+
+ranker = load_ranker()
 
 st.title('Semantic Storytelling Application')
 st.header('Create an news article automaticly')
-title = st.text_input('Enter the title/topic of your article:', '')
 
-if title != '':
-    st.write(f'Let\'s write an article about: {title}')
+option = st.selectbox('Step:',
+                      ('Passages selection', 'Passages selected', 'Summarization')
+                    )
+
+
+if option == 'Passages selection':
+  title = st.text_input('Enter the title/topic of your article:', '')
+  number_in_basket = st.empty()
+  basket = TinyDB(_BASKET_FILENAME).table('basket')
+  if title != '':
+    passages = get_passages(ranker, title)
+    for passage in passages:
+      passage_hash = hash(passage['text']+passage['source'])
+      if st.checkbox('Add to basket', key='{}'.format(passage_hash)):
+        if not passage_hash in [item['hash'] for item in basket.all()]:
+          basket.insert({
+            'hash': passage_hash,
+            'text': passage['text'],
+            'source': passage['source'],
+          })
+        pass
+      else:
+        st.write(passage['text'])
+        st.write(passage['source'])
+        st.write(' ')
+        if passage_hash in [item['hash'] for item in basket.all()]:
+          basket.remove(
+            doc_ids=[
+              basket.get(Query().hash == passage_hash).doc_id
+            ]
+          )
+    number_in_basket.text(f'Number of passages in basket: {len(basket)}')
