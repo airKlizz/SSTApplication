@@ -31,6 +31,8 @@ ranker = load_ranker()
 st.sidebar.title('Semantic Storytelling Application')
 st.sidebar.header('Create an news article automaticly')
 
+st.sidebar.markdown(' ')
+st.sidebar.markdown('Menu:')
 passage_selection = st.sidebar.button("Passages selection")
 passage_selected = st.sidebar.button("Passages selected")
 passage_summarization = st.sidebar.button("Summarization")
