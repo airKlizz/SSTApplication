@@ -28,10 +28,10 @@ def get_passages(ranker, title):
 
 ranker = load_ranker()
 
-st.title('Semantic Storytelling Application')
-st.header('Create an news article automaticly')
+st.sidebar.title('Semantic Storytelling Application')
+st.sidebar.header('Create an news article automaticly')
 
-option = st.selectbox('Step:',
+option = st.sidebar.selectbox('Step:',
                       ('Passages selection', 'Passages selected', 'Summarization')
                     )
 
