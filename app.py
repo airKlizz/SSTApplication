@@ -12,7 +12,6 @@ from tinydb import TinyDB, Query
 _MODEL_NAME = 'roberta-large'
 _WEIGTH_PATH = 'MsMarco/model/saved_weights/model_roberta-large_mrr_0.303.h5'
 
-_TOP_N = 10
 _BASKET_FILENAME = 'basket.db'
 
 @st.cache(hash_funcs={Ranker: hash})
@@ -27,10 +26,10 @@ def load_summarizer():
   return {'model': model, 'tokenizer': tokenizer}
 
 @st.cache(hash_funcs={Ranker: hash})
-def get_passages(ranker, title):
+def get_passages(ranker, title, num_urls, top_n, top_n_bm25):
   ranker.topic = title
-  ranker.find_passages(3)
-  top, scores = ranker.get_rerank_top(top_n=_TOP_N, top_n_bm25=20)
+  ranker.find_passages(num_urls)
+  top, scores = ranker.get_rerank_top(top_n=top_n, top_n_bm25=top_n_bm25)
   return [{'text': passage.text, 'source': passage.source} for passage in top]
 
 def summarize(summarizer, document):
@@ -57,8 +56,11 @@ if option == 'Passages selection':
   number_in_basket = st.empty()
   st.markdown('*****')
   title = st.text_input('Research article:', '')
+  num_urls = st.slider('Number of url to look at:', 0, 50, 5)
+  top_n_bm25 = st.slider('Number of passages to re-rank:', 0, 200, 50)
+  top_n = st.slider('Number of passages to display:', 0, 50, 10)
   if title != '':
-    passages = get_passages(ranker, title)
+    passages = get_passages(ranker, title, num_urls, top_n, top_n_bm25)
     for passage in passages:
       passage_hash = hash(passage['text']+passage['source'])
       if st.checkbox('Select', key='{}'.format(passage_hash)):
