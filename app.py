@@ -31,12 +31,13 @@ ranker = load_ranker()
 st.sidebar.title('Semantic Storytelling Application')
 st.sidebar.header('Create an news article automaticly')
 
-option = st.sidebar.selectbox('Step:',
-                      ('Passages selection', 'Passages selected', 'Summarization')
-                    )
+passage_selection = st.sidebar.button("Passages selection")
+passage_selected = st.sidebar.button("Passages selected")
+passage_summarization = st.sidebar.button("Summarization")
 
 
-if option == 'Passages selection':
+
+if passage_selection:
   title = st.text_input('Enter the title/topic of your article:', '')
   number_in_basket = st.empty()
   basket = TinyDB(_BASKET_FILENAME).table('basket')
