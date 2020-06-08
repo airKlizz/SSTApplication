@@ -4,7 +4,7 @@ from st_utils import rerun
 
 import tensorflow as tf
 import numpy as np
-from transformers import TFAutoModel, AutoTokenizer
+from transformers import TFAutoModel, TFAutoModelWithLMHead, AutoTokenizer
 from MsMarco.use import Ranker
 
 from tinydb import TinyDB, Query
@@ -20,6 +20,12 @@ def load_ranker():
   ranker = Ranker('', _MODEL_NAME, _WEIGTH_PATH)
   return ranker
 
+@st.cache
+def load_summarizer():
+  model = TFAutoModelWithLMHead.from_pretrained("t5-base")
+  tokenizer = AutoTokenizer.from_pretrained("t5-base")
+  return {'model': model, 'tokenizer': tokenizer}
+
 @st.cache(hash_funcs={Ranker: hash})
 def get_passages(ranker, title):
   ranker.topic = title
@@ -27,7 +33,16 @@ def get_passages(ranker, title):
   top, scores = ranker.get_rerank_top(top_n=_TOP_N, top_n_bm25=20)
   return [{'text': passage.text, 'source': passage.source} for passage in top]
 
+@st.cache
+def summarize(summarizer, document):
+  tokenizer = summarizer['tokenizer']
+  model = summarizer['model']
+  inputs = tokenizer.encode("summarize: " + document, return_tensors="tf", max_length=512)
+  outputs = model.generate(inputs, max_length=150, min_length=40, length_penalty=2.0, num_beams=4, early_stopping=True)
+  return tokenizer.decode(outputs[0], skip_special_tokens=True, clean_up_tokenization_spaces=False)
+
 ranker = load_ranker()
+summarizer = load_summarizer()
 
 st.sidebar.title('Semantic Storytelling Application')
 st.sidebar.header('Create an news article automaticly')
@@ -40,8 +55,9 @@ basket = TinyDB(_BASKET_FILENAME).table('basket')
 
 if option == 'Passages selection':
   st.header("Select passages for your article")
-  title = st.text_input('Enter the title/topic of your article:', '')
   number_in_basket = st.empty()
+  st.markdown('*****')
+  title = st.text_input('Research article:', '')
   if title != '':
     passages = get_passages(ranker, title)
     for passage in passages:
@@ -91,4 +107,7 @@ elif option == 'Passages selected':
 
 elif option == 'Summarization':
   st.header("Summarization of selected passages to create an article")
-  pass
+  st.markdown('*****')
+  document = ' '.join([passage['text'] for passage in basket.all()])
+  summary = summarize(summarizer, document)
+  st.write(summary)
