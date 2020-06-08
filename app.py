@@ -110,8 +110,8 @@ elif option == 'Summarization':
   st.header("Summarization of selected passages to create an article")
   title_of_article = st.text_input('Title of the article:', 'My article')
   st.markdown('*****')
-  min_length = st.slider('Minimum length of the summarize:', 10, 50, 200)
-  max_length = st.slider('Maximum length of the summarize:', 100, 100, 400)
+  min_length = st.slider('Minimum length of the summarize:', 10, 200, 50)
+  max_length = st.slider('Maximum length of the summarize:', 100, 400, 100)
   do_summarize = st.button('Summarize')
   st.markdown('*****')
   if do_summarize:
