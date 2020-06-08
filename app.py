@@ -76,6 +76,7 @@ elif option == 'Passages selected':
       'source': '',
     })
     rerun()
+  st.markdown('*****')
   for passage in basket.all():
     st.write(passage['text'])
     st.write(passage['source'])
