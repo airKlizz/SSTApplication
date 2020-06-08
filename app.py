@@ -33,7 +33,6 @@ def get_passages(ranker, title):
   top, scores = ranker.get_rerank_top(top_n=_TOP_N, top_n_bm25=20)
   return [{'text': passage.text, 'source': passage.source} for passage in top]
 
-@st.cache(allow_output_mutation=True)
 def summarize(summarizer, document):
   tokenizer = summarizer['tokenizer']
   model = summarizer['model']
