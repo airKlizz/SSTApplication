@@ -70,7 +70,7 @@ elif option == 'Passages selected':
   for passage in basket.all():
     st.write(passage['text'])
     st.write(passage['source'])
-    if st.button('Remove'):
+    if st.button('Remove', key='remove{}'.format(passage['hash'])):
         basket.remove(
           doc_ids=[
             basket.get(Query().hash == passage['hash']).doc_id
