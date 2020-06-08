@@ -109,13 +109,14 @@ elif option == 'Passages selected':
 elif option == 'Summarization':
   st.header("Summarization of selected passages to create an article")
   title_of_article = st.text_input('Title of the article:', 'My article')
+  document = ' '.join([passage['text'] for passage in basket.all()])
+  text_to_summarize = st.text_area('Text to summarize:', value=document, height=None)
   st.markdown('*****')
   min_length = st.slider('Minimum length of the summarize:', 10, 200, 50)
   max_length = st.slider('Maximum length of the summarize:', 100, 400, 100)
   do_summarize = st.button('Summarize')
   st.markdown('*****')
   if do_summarize:
-    document = ' '.join([passage['text'] for passage in basket.all()])
-    summary = summarize(summarizer, document, max_length, min_length)
+    summary = summarize(summarizer, text_to_summarize, max_length, min_length)
     st.title(title_of_article)
     st.write(summary)
