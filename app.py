@@ -32,11 +32,11 @@ def get_passages(ranker, title, num_urls, top_n, top_n_bm25):
   top, scores = ranker.get_rerank_top(top_n=top_n, top_n_bm25=top_n_bm25)
   return [{'text': passage.text, 'source': passage.source} for passage in top]
 
-def summarize(summarizer, document):
+def summarize(summarizer, document, max_length, min_length):
   tokenizer = summarizer['tokenizer']
   model = summarizer['model']
   inputs = tokenizer.encode("summarize: " + document, return_tensors="tf", max_length=512)
-  outputs = model.generate(inputs, max_length=150, min_length=40, length_penalty=2.0, num_beams=4, early_stopping=True)
+  outputs = model.generate(inputs, max_length=max_length, min_length=min_length, length_penalty=2.0, num_beams=4, early_stopping=True)
   return tokenizer.decode(outputs[0], skip_special_tokens=True, clean_up_tokenization_spaces=False)
 
 ranker = load_ranker()
@@ -53,9 +53,9 @@ basket = TinyDB(_BASKET_FILENAME).table('basket')
 
 if option == 'Passages selection':
   st.header("Select passages for your article")
-  num_urls = st.slider('Number of url to look at:', 0, 50, 5)
-  top_n_bm25 = st.slider('Number of passages to re-rank:', 0, 200, 50)
-  top_n = st.slider('Number of passages to display:', 0, 50, 10)
+  num_urls = st.slider('Number of url to look at:', 1, 50, 5)
+  top_n_bm25 = st.slider('Number of passages to re-rank:', 10, 200, 50)
+  top_n = st.slider('Number of passages to display:', 1, 50, 10)
   number_in_basket = st.empty()
   st.markdown('*****')
   title = st.text_input('Research article:', '')
@@ -108,7 +108,14 @@ elif option == 'Passages selected':
 
 elif option == 'Summarization':
   st.header("Summarization of selected passages to create an article")
+  title_of_article = st.text_input('Title of the article:', 'My article')
   st.markdown('*****')
-  document = ' '.join([passage['text'] for passage in basket.all()])
-  summary = summarize(summarizer, document)
-  st.write(summary)
+  min_length = st.slider('Minimum length of the summarize:', 10, 50, 200)
+  max_length = st.slider('Maximum length of the summarize:', 100, 100, 400)
+  do_summarize = st.button('Summarize')
+  st.markdown('*****')
+  if do_summarize:
+    document = ' '.join([passage['text'] for passage in basket.all()])
+    summary = summarize(summarizer, document, max_length, min_length)
+    st.title(title_of_article)
+    st.write(summary)
