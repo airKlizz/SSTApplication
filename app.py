@@ -65,7 +65,10 @@ if option == 'Passages selection':
     number_in_basket.text(f'Number of passages in basket: {len(basket)}')
 
 elif option == 'Passages selected':
-  st.write(str(basket.all()))
+  for passage in basket.all():
+    st.write(passage['text'])
+    st.write(passage['source'])
+    st.write('')
 
 
 elif option == 'Summarization':
