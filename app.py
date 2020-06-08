@@ -46,7 +46,7 @@ if option == 'Passages selection':
     passages = get_passages(ranker, title)
     for passage in passages:
       passage_hash = hash(passage['text']+passage['source'])
-      if st.checkbox('Add to basket', key='{}'.format(passage_hash)):
+      if st.checkbox('Select', key='{}'.format(passage_hash)):
         if not passage_hash in [item['hash'] for item in basket.all()]:
           basket.insert({
             'hash': passage_hash,
@@ -68,6 +68,14 @@ if option == 'Passages selection':
 
 elif option == 'Passages selected':
   st.header("The passages you have selected")
+  new_text = st.text_area('Enter your own passage:', value='', height=None)
+  if new_text != '':
+    basket.insert({
+      'hash': hash(new_text),
+      'text': new_text,
+      'source': '',
+    })
+    rerun()
   for passage in basket.all():
     st.write(passage['text'])
     st.write(passage['source'])
