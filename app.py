@@ -53,12 +53,12 @@ basket = TinyDB(_BASKET_FILENAME).table('basket')
 
 if option == 'Passages selection':
   st.header("Select passages for your article")
-  number_in_basket = st.empty()
-  st.markdown('*****')
-  title = st.text_input('Research article:', '')
   num_urls = st.slider('Number of url to look at:', 0, 50, 5)
   top_n_bm25 = st.slider('Number of passages to re-rank:', 0, 200, 50)
   top_n = st.slider('Number of passages to display:', 0, 50, 10)
+  number_in_basket = st.empty()
+  st.markdown('*****')
+  title = st.text_input('Research article:', '')
   if title != '':
     passages = get_passages(ranker, title, num_urls, top_n, top_n_bm25)
     for passage in passages:
