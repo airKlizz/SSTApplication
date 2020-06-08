@@ -20,7 +20,7 @@ def load_ranker():
   ranker = Ranker('', _MODEL_NAME, _WEIGTH_PATH)
   return ranker
 
-@st.cache(hash_funcs={tf.python.util.object_identity._ObjectIdentityWrapper: hash, AutoTokenizer: hash})
+@st.cache(allow_output_mutation=True)
 def load_summarizer():
   model = TFAutoModelWithLMHead.from_pretrained("t5-base")
   tokenizer = AutoTokenizer.from_pretrained("t5-base")
@@ -33,7 +33,7 @@ def get_passages(ranker, title):
   top, scores = ranker.get_rerank_top(top_n=_TOP_N, top_n_bm25=20)
   return [{'text': passage.text, 'source': passage.source} for passage in top]
 
-@st.cache(hash_funcs={TFAutoModelWithLMHead: hash, AutoTokenizer: hash})
+@st.cache(allow_output_mutation=True)
 def summarize(summarizer, document):
   tokenizer = summarizer['tokenizer']
   model = summarizer['model']
