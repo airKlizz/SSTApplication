@@ -69,3 +69,4 @@ elif option == 'Passages selected':
 
 
 elif option == 'Summarization':
+  pass
