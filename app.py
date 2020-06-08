@@ -81,4 +81,5 @@ elif option == 'Passages selected':
     st.write('')
 
 elif option == 'Summarization':
+  st.header("Summarization of selected passages to create an article")
   pass
