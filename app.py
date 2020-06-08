@@ -20,7 +20,7 @@ def load_ranker():
   ranker = Ranker('', _MODEL_NAME, _WEIGTH_PATH)
   return ranker
 
-@st.cache(hash_funcs={TFAutoModelWithLMHead: hash, AutoTokenizer: hash})
+@st.cache(hash_funcs={tf.python.util.object_identity._ObjectIdentityWrapper: hash})
 def load_summarizer():
   model = TFAutoModelWithLMHead.from_pretrained("t5-base")
   tokenizer = AutoTokenizer.from_pretrained("t5-base")
