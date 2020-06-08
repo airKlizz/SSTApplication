@@ -1,5 +1,6 @@
 
 import streamlit as st
+from streamlit.ScriptRunner import RerunException
 
 import tensorflow as tf
 import numpy as np
@@ -63,7 +64,7 @@ if option == 'Passages selection':
               basket.get(Query().hash == passage_hash).doc_id
             ]
           )
-    number_in_basket.text(f'Number of passages in basket: {len(basket)}')
+    number_in_basket.text(f'Number of passages selected: {len(basket)}')
 
 elif option == 'Passages selected':
   st.header("The passages you have selected")
@@ -76,6 +77,7 @@ elif option == 'Passages selected':
             basket.get(Query().hash == passage['hash']).doc_id
           ]
         )
+        raise RerunException()
     st.write('')
 
 elif option == 'Summarization':
