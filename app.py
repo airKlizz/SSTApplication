@@ -38,6 +38,7 @@ option = st.sidebar.selectbox('Menu:',
 basket = TinyDB(_BASKET_FILENAME).table('basket')
 
 if option == 'Passages selection':
+  st.header("Select passages for your article")
   title = st.text_input('Enter the title/topic of your article:', '')
   number_in_basket = st.empty()
   if title != '':
@@ -65,11 +66,17 @@ if option == 'Passages selection':
     number_in_basket.text(f'Number of passages in basket: {len(basket)}')
 
 elif option == 'Passages selected':
+  st.header("The passages you have selected")
   for passage in basket.all():
     st.write(passage['text'])
     st.write(passage['source'])
+    if st.button('Remove'):
+        basket.remove(
+          doc_ids=[
+            basket.get(Query().hash == passage['hash']).doc_id
+          ]
+        )
     st.write('')
-
 
 elif option == 'Summarization':
   pass
