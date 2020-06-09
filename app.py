@@ -4,7 +4,7 @@ from st_utils import rerun
 
 import tensorflow as tf
 import numpy as np
-from transformers import AutoModelWithLMHead, AutoTokenizer
+from transformers import AutoTokenizer, AutoModelWithLMHead
 from MsMarco.use import Ranker
 
 from tinydb import TinyDB, Query
