@@ -4,7 +4,7 @@ from st_utils import rerun
 
 import tensorflow as tf
 import numpy as np
-from transformers import TFAutoModel, TFAutoModelWithLMHead, AutoTokenizer
+from transformers import AutoModelWithLMHead, AutoTokenizer
 from MsMarco.use import Ranker
 
 from tinydb import TinyDB, Query
@@ -21,8 +21,8 @@ def load_ranker():
 
 @st.cache(allow_output_mutation=True)
 def load_summarizer():
-  model = TFAutoModelWithLMHead.from_pretrained("t5-base")
-  tokenizer = AutoTokenizer.from_pretrained("t5-base")
+  tokenizer = AutoTokenizer.from_pretrained("airKlizz/bart-large-multi-en-wiki-news")
+	model = AutoModelWithLMHead.from_pretrained("airKlizz/bart-large-multi-en-wiki-news")
   return {'model': model, 'tokenizer': tokenizer}
 
 @st.cache(hash_funcs={Ranker: hash})
