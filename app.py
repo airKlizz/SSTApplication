@@ -35,7 +35,7 @@ def get_passages(ranker, title, num_urls, top_n, top_n_bm25):
 def summarize(summarizer, document, max_length, min_length):
   tokenizer = summarizer['tokenizer']
   model = summarizer['model']
-  inputs = tokenizer.encode("summarize: " + document, return_tensors="tf", max_length=512)
+  inputs = tokenizer.encode("summarize: " + document, return_tensors="pt", max_length=512)
   outputs = model.generate(inputs, max_length=max_length, min_length=min_length, length_penalty=2.0, num_beams=4, early_stopping=True)
   return tokenizer.decode(outputs[0], skip_special_tokens=True, clean_up_tokenization_spaces=False)
 
