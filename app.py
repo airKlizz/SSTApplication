@@ -22,7 +22,7 @@ def load_ranker():
 @st.cache(allow_output_mutation=True)
 def load_summarizer():
   tokenizer = AutoTokenizer.from_pretrained("airKlizz/bart-large-multi-en-wiki-news")
-	model = AutoModelWithLMHead.from_pretrained("airKlizz/bart-large-multi-en-wiki-news")
+  model = AutoModelWithLMHead.from_pretrained("airKlizz/bart-large-multi-en-wiki-news")
   return {'model': model, 'tokenizer': tokenizer}
 
 @st.cache(hash_funcs={Ranker: hash})
