@@ -22,7 +22,7 @@ def load_ranker():
 @st.cache(allow_output_mutation=True)
 def load_summarizer():
   tokenizer = AutoTokenizer.from_pretrained("airKlizz/bart-large-multi-en-wiki-news")
-  model = AutoModelWithLMHead.from_pretrained("airKlizz/bart-large-multi-en-wiki-news")
+  model = AutoModelWithLMHead.from_pretrained("airKlizz/bart-large-multi-en-wiki-news").cuda()
   return {'model': model, 'tokenizer': tokenizer}
 
 @st.cache(hash_funcs={Ranker: hash})
@@ -36,7 +36,7 @@ def summarize(summarizer, document, max_length, min_length):
   tokenizer = summarizer['tokenizer']
   model = summarizer['model']
   inputs = tokenizer.encode("summarize: " + document, return_tensors="pt", max_length=512)
-  outputs = model.generate(inputs, max_length=max_length, min_length=min_length, length_penalty=2.0, num_beams=4, early_stopping=True)
+  outputs = model.generate(inputs.cuda(), max_length=max_length, min_length=min_length, length_penalty=2.0, num_beams=4, early_stopping=True)
   return tokenizer.decode(outputs[0], skip_special_tokens=True, clean_up_tokenization_spaces=False)
 
 ranker = load_ranker()
@@ -112,8 +112,8 @@ elif option == 'Summarization':
   document = ' '.join([passage['text'] for passage in basket.all()])
   text_to_summarize = st.text_area('Text to summarize:', value=' '.join(document.split(' ')[:512]), height=300)
   st.markdown('*****')
-  min_length = st.slider('Minimum length of the summarize:', 10, 200, 50)
-  max_length = st.slider('Maximum length of the summarize:', 100, 400, 100)
+  min_length = st.slider('Minimum length of the summarize:', 100, 300, 200)
+  max_length = st.slider('Maximum length of the summarize:', 300, 500, 400)
   do_summarize = st.button('Summarize')
   st.markdown('*****')
   if do_summarize:
