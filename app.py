@@ -33,10 +33,14 @@ def get_passages(ranker, title, num_urls, top_n, top_n_bm25):
   return [{'text': passage.text, 'source': passage.source} for passage in top]
 
 def summarize(summarizer, document, max_length, min_length):
+  print('Begin summarize')
   tokenizer = summarizer['tokenizer']
   model = summarizer['model']
   inputs = tokenizer.encode("summarize: " + document, return_tensors="pt", max_length=512)
+  print('Generation')
+  print('On cuda', next(model.parameters()).is_cuda)
   outputs = model.generate(inputs.cuda(), max_length=max_length, min_length=min_length, length_penalty=2.0, num_beams=4, early_stopping=True)
+  print('Generated')
   return tokenizer.decode(outputs[0], skip_special_tokens=True, clean_up_tokenization_spaces=False)
 
 ranker = load_ranker()
