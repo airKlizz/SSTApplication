@@ -56,18 +56,19 @@ elif option == 'Text to summarize':
         st.write('')
 
 elif option == 'Summarization':
-  st.header("Summarization of selected passages to create an article")
-  st.markdown('*****')
-  st.write('Text to summarize:')
-  document = ' '.join([passage['text'] for passage in db.all()][:1024])
-  st.write(document)
-  st.markdown('*****')
-  min_length = st.slider('Minimum length of the summarize:', 100, 300, 200)
-  max_length = st.slider('Maximum length of the summarize:', 300, 500, 400)
-  do_summarize = st.button('Summarize')
-  st.markdown('*****')
-  if do_summarize:
-    summary = summarize(summarizer, text_to_summarize, max_length, min_length)
-    st.write(summary)
+    st.header("Summarization of selected passages to create an article")
+    st.markdown('*****')
+    st.write('Text to summarize:')
+    document = ' '.join([passage['text'] for passage in db.all()][:1024])
+    st.write(document)
+    st.markdown('*****')
+    min_length = st.slider('Minimum length of the summarize:', 100, 300, 200)
+    max_length = st.slider('Maximum length of the summarize:', 300, 500, 400)
+    do_summarize = st.button('Summarize')
+    st.markdown('*****')
+    if do_summarize:
+        text_to_summarize = ' '.join([passage['text'] for passage in db.all()])
+        summary = summarize(summarizer, text_to_summarize, max_length, min_length)
+        st.write(summary)
 
 
