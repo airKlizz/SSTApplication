@@ -37,25 +37,23 @@ elif option == 'Text to summarize':
     st.header('Enter document to summarize')
     st.markdown('*****')
     new_text = st.text_area('Enter your document:', value='', height=None)
-  if new_text != '':
-    basket.insert({
-      'hash': hash(new_text),
-      'text': new_text,
-      'source': '',
-    })
-    rerun()
-  st.markdown('*****')
-  for passage in basket.all():
-    st.write(passage['text'])
-    st.write(passage['source'])
-    if st.button('Remove', key='remove{}'.format(passage['hash'])):
-        basket.remove(
-          doc_ids=[
-            basket.get(Query().hash == passage['hash']).doc_id
-          ]
-        )
+    if new_text != '':
+        basket.insert({
+            'hash': hash(new_text),
+            'text': new_text,
+        })
         rerun()
-    st.write('')
+    st.markdown('*****')
+    for passage in basket.all():
+        st.write(passage['text'])
+        if st.button('Remove', key='remove{}'.format(passage['hash'])):
+            basket.remove(
+                doc_ids=[
+                    basket.get(Query().hash == passage['hash']).doc_id
+                ]
+            )
+            rerun()
+        st.write('')
 
 elif option == 'Summarization':
   st.header("Summarization of selected passages to create an article")
