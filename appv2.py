@@ -4,6 +4,7 @@ from st_utils import rerun
 from transformers import AutoTokenizer, AutoModelWithLMHead
 
 from tinydb import TinyDB, Query
+from newsplease import NewsPlease
 
 @st.cache(allow_output_mutation=True)
 def load_summarizer():
@@ -24,20 +25,25 @@ st.sidebar.title('Semantic Storytelling Application')
 st.sidebar.header('Multi-document summarization')
 
 option = st.sidebar.selectbox('Menu:',
-                      ('Search URLs', 'Text to summarize', 'Summarization')
+                      ('Text to summarize', 'Summarization')
                     )
 
 db = TinyDB('documents.json').table('documents')
 
-if option == 'Search URLs':
-    st.header('To do')
+if option == 'Text to summarize':
+    st.header('Enter an URL or a document to summarize')
     st.markdown('*****')
-
-elif option == 'Text to summarize':
-    st.header('Enter document to summarize')
-    st.markdown('*****')
-    new_text = st.text_area('Enter your document:', value='', height=None)
-    if new_text != '':
+    new_url = st.text_input('Enter your URL:', value='')
+    new_text = st.text_area('Enter your document:', value='')
+    if new_url != '':
+        article = NewsPlease.from_url(new_url)
+        new_text = article.main_text
+        db.insert({
+            'hash': hash(new_text),
+            'text': new_text,
+        })
+        rerun()
+    elif new_text != '':
         db.insert({
             'hash': hash(new_text),
             'text': new_text,
