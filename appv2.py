@@ -38,18 +38,18 @@ elif option == 'Text to summarize':
     st.markdown('*****')
     new_text = st.text_area('Enter your document:', value='', height=None)
     if new_text != '':
-        basket.insert({
+        db.insert({
             'hash': hash(new_text),
             'text': new_text,
         })
         rerun()
     st.markdown('*****')
-    for passage in basket.all():
+    for passage in db.all():
         st.write(passage['text'])
         if st.button('Remove', key='remove{}'.format(passage['hash'])):
-            basket.remove(
+            db.remove(
                 doc_ids=[
-                    basket.get(Query().hash == passage['hash']).doc_id
+                    db.get(Query().hash == passage['hash']).doc_id
                 ]
             )
             rerun()
