@@ -37,7 +37,7 @@ if option == 'Text to summarize':
     new_text = st.text_area('Enter your document:', value='')
     if new_url != '':
         article = NewsPlease.from_url(new_url)
-        new_text = article.main_text
+        new_text = article.maintext
         db.insert({
             'hash': hash(new_text),
             'text': new_text,
