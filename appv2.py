@@ -38,11 +38,12 @@ if option == 'Text to summarize':
     if new_url != '':
         article = NewsPlease.from_url(new_url)
         new_text = article.maintext
-        db.insert({
-            'hash': hash(new_text),
-            'text': new_text,
-        })
-        rerun()
+        if new_text != None and new_text != '':
+            db.insert({
+                'hash': hash(new_text),
+                'text': new_text,
+            })
+            rerun()
     elif new_text != '':
         db.insert({
             'hash': hash(new_text),
