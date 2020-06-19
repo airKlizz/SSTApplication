@@ -131,4 +131,5 @@ if st.button('Run'):
         if tokenizer == None and model == None:
             tokenizer, model = load_tokenizer_and_model(tokenizer_name, model_name)
         summary = summarize(tokenizer, model, text_to_summarize, max_length, min_length)
+        print("**Summary: **" + summary)
         st.markdown("**Summary: **" + summary)
