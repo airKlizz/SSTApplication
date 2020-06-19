@@ -127,7 +127,7 @@ if st.button('Run'):
     if text_to_summarize == "":
         st.write("Please enter a text to summarize or chose an example.")
     elif tokenizer == None and model == None:
-        st.write("Please load a model.")
+        tokenizer, model = load_tokenizer_and_model(tokenizer_name, model_name)
     else:
         summary = summarize(tokenizer, model, text_to_summarize, max_length, min_length)
         st.markdown("**Summary: **" + summary)
