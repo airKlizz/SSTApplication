@@ -16,11 +16,12 @@ def load_tokenizer_and_model(tokenizer_name, model_name):
   return tokenizer, model
 
 def summarize(tokenizer, model, document, max_length, min_length):
-  inputs = tokenizer.encode(document, return_tensors="pt", pad_to_max_length=True, max_length=tokenizer.max_len)
-  if torch.cuda.is_available():
-      inputs.cuda()
-  outputs = model.generate(inputs, max_length=max_length, min_length=min_length, length_penalty=2.0, num_beams=4, early_stopping=True)
-  return tokenizer.decode(outputs[0], skip_special_tokens=True, clean_up_tokenization_spaces=False)
+    inputs = tokenizer.encode(document, return_tensors="pt", pad_to_max_length=True, max_length=tokenizer.max_len)
+    if torch.cuda.is_available():
+        outputs = model.generate(inputs.cuda(), max_length=max_length, min_length=min_length, length_penalty=2.0, num_beams=4, early_stopping=True)
+    else:
+        outputs = model.generate(inputs, max_length=max_length, min_length=min_length, length_penalty=2.0, num_beams=4, early_stopping=True)
+    return tokenizer.decode(outputs[0], skip_special_tokens=True, clean_up_tokenization_spaces=False)
 
 en_dataset = load_dataset('en_wiki_multi_news.py', cache_dir='dataset/.en-wiki-multi-news-cache', split='test')
 de_dataset = load_dataset('de_wiki_multi_news.py', cache_dir='dataset/.de-wiki-multi-news-cache', split='test')
